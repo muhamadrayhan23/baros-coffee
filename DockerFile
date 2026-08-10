@@ -1,48 +1,26 @@
-# 1. Gunakan Base Image PHP 8.4 Apache Resmi
 FROM php:8.4-apache
 
-# 2. Update package system & install dependency yang dibutuhkan
+# Install dependencies sistem & ekstensi pgsql untuk Supabase
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    nodejs \
-    npm
+    libpng-dev libonig-dev libxml2-dev libzip-dev zip unzip git curl nodejs npm libpq-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Bersihkan cache apt untuk memperkecil ukuran image
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# 3. Install & aktifkan ekstensi PHP yang dibutuhkan Laravel
-RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
-
-# 4. Aktifkan modul mod_rewrite Apache (diperlukan untuk routing Laravel)
+RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 RUN a2enmod rewrite
 
-# 5. Install Composer terbaru dari image resmi
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# 6. Set working directory
 WORKDIR /var/www/html
-
-# 7. Copy seluruh kode proyek ke dalam container
 COPY . /var/www/html
 
-# 8. Jalankan instalasi dependensi Laravel & Build Tailwind CSS via Vite
+# Build vendor & assets Tailwind
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build
 
-# 9. Ubah DocumentRoot Apache mengarah ke folder public/ milik Laravel
+# Direct ke public & set permission
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-
-# 10. Atur hak akses folder storage dan bootstrap/cache agar bisa di-write oleh web server
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan migrate --force && apache2-foreground"]
