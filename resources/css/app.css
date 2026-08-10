@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --font-sans: 'Inconsolata', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Inconsolata', monospace;
+    --color-coffee-bean: #220F07;
+    --color-frosted-blue: #ADE8F4;
+    --color-deep-forest: #003E1F;
+    --color-black-cherry: #540B0E;
+    --color-cornslik: #FFF8DC;
+    --color-cornsilk: #FFF8DC;
+}
+
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+/* Banner Carousel Animations */
+@keyframes banner-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.banner-slide img {
+    animation: banner-fade-in 0.7s ease-out both;
+}
