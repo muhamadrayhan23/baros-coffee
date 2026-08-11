@@ -26,7 +26,6 @@
                 <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
                 <input type="text" data-search-input placeholder="Cari artikel..."
                     class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
-
                 <!-- Icon Search (Dipindah ke sebelah kanan dengan right-3) -->
                 <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-coffee-bean/50 text-base">
