@@ -8,7 +8,7 @@
             <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
                 <div class="overflow-hidden rounded-3xl border border-coffee-bean/10">
                     <img src="{{ $product->gambar ? asset('product/' . $product->gambar) : asset('assets/home/home 2.png') }}"
-                        alt="{{ $product->nama_produk }}" class="h-50 w-50 object-cover">
+                        alt="{{ $product->nama_produk }}" class="h-full w-full object-contain">
                 </div>
                 <div>
                     <p class="text-sm font-semibold uppercase tracking-[0.3em] text-black-cherry/70">Detail Produk</p>

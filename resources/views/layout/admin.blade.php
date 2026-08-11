@@ -86,6 +86,57 @@
             }
         });
     </script>
+    <!-- Image Compression Script to avoid Vercel Payload Limit -->
+    <script>
+        document.addEventListener('change', async function(e) {
+            if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'file' && (e.target.accept.includes('image') || (e.target.files[0] && e.target.files[0].type.startsWith('image/')))) {
+                const file = e.target.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                // Compress if larger than 1MB
+                if (file.size > 1024 * 1024) {
+                    try {
+                        const bitmap = await createImageBitmap(file);
+                        const canvas = document.createElement('canvas');
+                        let width = bitmap.width;
+                        let height = bitmap.height;
+                        const MAX_SIZE = 1200;
+                        
+                        if (width > MAX_SIZE || height > MAX_SIZE) {
+                            if (width > height) {
+                                height = Math.round((height / width) * MAX_SIZE);
+                                width = MAX_SIZE;
+                            } else {
+                                width = Math.round((width / height) * MAX_SIZE);
+                                height = MAX_SIZE;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(bitmap, 0, 0, width, height);
+                        
+                        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                        
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                const newFile = new File([blob], file.name, {
+                                    type: mimeType,
+                                    lastModified: Date.now()
+                                });
+                                const dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(newFile);
+                                e.target.files = dataTransfer.files;
+                            }
+                        }, mimeType, 0.8);
+                    } catch (err) {
+                        console.error('Error compressing image:', err);
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

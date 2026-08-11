@@ -108,11 +108,13 @@
         function openMenu() {
             panel.classList.remove('-translate-x-full');
             overlay.classList.remove('hidden');
+            if (toggle) toggle.style.display = 'none';
         }
 
         function closeMenu() {
             panel.classList.add('-translate-x-full');
             overlay.classList.add('hidden');
+            if (toggle) toggle.style.display = '';
         }
 
         if (toggle) {

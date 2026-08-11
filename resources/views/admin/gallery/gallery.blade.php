@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class ="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
-            <label class="relative block w-full sm:w-56">
+            <label class="relative block w-full sm:w-80">
                 <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
                 <input type="text" data-search-input placeholder="Cari galeri..."
                     class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
@@ -264,7 +264,6 @@
             }
 
             if (!rows.length) {
-                emptyStateRow.classList.remove('hidden');
                 return;
             }
 

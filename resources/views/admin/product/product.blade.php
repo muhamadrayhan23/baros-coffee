@@ -19,7 +19,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 mt-6">
-            <label class="relative block w-full sm:w-56">
+            <label class="relative block w-full sm:w-80">
                 <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
                 <input type="text" data-search-input placeholder="Cari produk..."
                     class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
@@ -108,11 +108,13 @@
                 <p class="text-sm font-semibold text-coffee-bean">Produk tidak ditemukan.</p>
             </div>
 
-            <div class="mt-8 flex justify-center">
-                <div class="rounded-2xl border border-coffee-bean/10 bg-cornsilk/60 px-3 py-2 shadow-sm">
-                    {{ $products->links() }}
+            @if ($products->hasPages())
+                <div class="mt-8 flex justify-center">
+                    <div class="rounded-2xl border border-coffee-bean/10 bg-cornsilk/60 px-3 py-2 shadow-sm">
+                        {{ $products->links() }}
+                    </div>
                 </div>
-            </div>
+            @endif
         @else
             <div class="rounded-3xl border border-coffee-bean/10 p-10 text-center">
                 <p class="text-sm font-semibold text-coffee-bean">Belum ada produk. Silakan tambahkan produk baru untuk
