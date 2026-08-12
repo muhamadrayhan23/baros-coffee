@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Gallery;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
@@ -37,11 +37,9 @@ class GalleryController extends Controller
         $gallery->caption = $request->caption;
 
         if ($request->hasFile('foto')) {
-            File::ensureDirectoryExists(public_path('gallery'));
-            $file = $request->file('foto');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('gallery'), $filename);
-            $gallery->foto = $filename;
+            // Upload foto langsung ke folder 'galleries' di Supabase Storage
+            $path = $request->file('foto')->store('galleries', 'supabase');
+            $gallery->foto = $path; // Menyimpan path misal: "galleries/xyz123.jpg"
         }
 
         $gallery->save();
@@ -73,15 +71,14 @@ class GalleryController extends Controller
         $gallery->caption = $request->caption;
 
         if ($request->hasFile('foto')) {
-            if ($gallery->foto && File::exists(public_path('gallery/' . $gallery->foto))) {
-                File::delete(public_path('gallery/' . $gallery->foto));
+            // Hapus foto lama dari Supabase Storage jika ada
+            if ($gallery->foto && Storage::disk('supabase')->exists($gallery->foto)) {
+                Storage::disk('supabase')->delete($gallery->foto);
             }
 
-            File::ensureDirectoryExists(public_path('gallery'));
-            $file = $request->file('foto');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('gallery'), $filename);
-            $gallery->foto = $filename;
+            // Upload foto baru
+            $path = $request->file('foto')->store('galleries', 'supabase');
+            $gallery->foto = $path;
         }
 
         $gallery->save();
@@ -93,8 +90,9 @@ class GalleryController extends Controller
     {
         $gallery = Gallery::findOrFail($id);
 
-        if ($gallery->foto && File::exists(public_path('gallery/' . $gallery->foto))) {
-            File::delete(public_path('gallery/' . $gallery->foto));
+        // Hapus foto dari Supabase Storage saat data dihapus
+        if ($gallery->foto && Storage::disk('supabase')->exists($gallery->foto)) {
+            Storage::disk('supabase')->delete($gallery->foto);
         }
 
         $gallery->delete();

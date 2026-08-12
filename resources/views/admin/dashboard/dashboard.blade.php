@@ -132,8 +132,17 @@
                                         <td class="px-6 py-4 font-bold opacity-60">{{ $index + 1 }}</td>
                                         <td class="px-6 py-4 font-bold">
                                             @if ($product->gambar)
-                                                <img src="{{ asset('product/' . $product->gambar) }}"
-                                                    alt="{{ $product->nama_produk }}"
+                                                @php
+                                                    $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                                    $productUrl = Str::startsWith($product->gambar, [
+                                                        'http://',
+                                                        'https://',
+                                                    ])
+                                                        ? $product->gambar
+                                                        : $baseUrl . '/' . ltrim($product->gambar, '/');
+                                                @endphp
+                                                <img src="{{ $productUrl }}" alt="{{ $product->nama_produk }}"
+                                                    onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                                     class="h-10 w-10 object-cover rounded-lg border border-coffee-bean/10">
                                             @else
                                                 <div
@@ -183,11 +192,16 @@
                                         <td class="px-6 py-4 font-bold align-middle">
                                             @if ($article->thumbnail)
                                                 @php
-                                                    $thumbnailPath = str_starts_with($article->thumbnail, 'article/')
+                                                    $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                                    $articleUrl = Str::startsWith($article->thumbnail, [
+                                                        'http://',
+                                                        'https://',
+                                                    ])
                                                         ? $article->thumbnail
-                                                        : 'article/' . $article->thumbnail;
+                                                        : $baseUrl . '/' . ltrim($article->thumbnail, '/');
                                                 @endphp
-                                                <img src="{{ asset($thumbnailPath) }}" alt="{{ $article->judul }}"
+                                                <img src="{{ $articleUrl }}" alt="{{ $article->judul }}"
+                                                    onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                                     class="h-10 w-16 object-cover rounded-lg border border-coffee-bean/10">
                                             @else
                                                 <div

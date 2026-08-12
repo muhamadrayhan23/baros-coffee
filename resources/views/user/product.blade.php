@@ -30,8 +30,17 @@
                     <div class="product-card rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4"
                         data-name="{{ strtolower($product->nama_produk) }}"
                         data-deskripsi="{{ strtolower($product->deskripsi) }}">
-                        <img src="{{ $product->gambar ? asset('product/' . $product->gambar) : asset('assets/home/home 2.png') }}"
-                            alt="{{ $product->nama_produk }}" class="h-48 w-full rounded-[1.2rem] object-cover">
+                        @php
+                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                            $imageUrl = $product->gambar
+                                ? (Str::startsWith($product->gambar, ['http://', 'https://'])
+                                    ? $product->gambar
+                                    : $baseUrl . '/' . ltrim($product->gambar, '/'))
+                                : asset('assets/home/home 2.png');
+                        @endphp
+                        <img src="{{ $imageUrl }}" alt="{{ $product->nama_produk }}"
+                            onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
+                            class="mt-4 h-56 w-full rounded-3xl object-cover border border-coffee-bean/10">
                         <h2 class="mt-4 text-xl font-bold text-coffee-bean">{{ $product->nama_produk }}</h2>
                         <p class="mt-2 text-sm leading-7 text-coffee-bean/70">{{ Str::limit($product->deskripsi, 120) }}</p>
                         <a href="{{ route('user.product.detail', $product->id) }}"

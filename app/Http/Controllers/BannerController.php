@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
@@ -38,11 +38,9 @@ class BannerController extends Controller
         $banner->published = $request->boolean('published', false);
 
         if ($request->hasFile('gambar')) {
-            File::ensureDirectoryExists(public_path('banner'));
-            $file = $request->file('gambar');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('banner'), $filename);
-            $banner->gambar = $filename;
+            // Upload langsung ke folder 'banners' di Supabase Storage
+            $path = $request->file('gambar')->store('banners', 'supabase');
+            $banner->gambar = $path; // Menyimpan path misal: "banners/xyz123.jpg"
         }
 
         $banner->save();
@@ -75,15 +73,14 @@ class BannerController extends Controller
         $banner->published = $request->has('published');
 
         if ($request->hasFile('gambar')) {
-            if ($banner->gambar && File::exists(public_path('banner/' . $banner->gambar))) {
-                File::delete(public_path('banner/' . $banner->gambar));
+            // Hapus gambar lama dari Supabase jika ada
+            if ($banner->gambar && Storage::disk('supabase')->exists($banner->gambar)) {
+                Storage::disk('supabase')->delete($banner->gambar);
             }
 
-            File::ensureDirectoryExists(public_path('banner'));
-            $file = $request->file('gambar');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('banner'), $filename);
-            $banner->gambar = $filename;
+            // Upload gambar baru
+            $path = $request->file('gambar')->store('banners', 'supabase');
+            $banner->gambar = $path;
         }
 
         $banner->save();
@@ -95,8 +92,9 @@ class BannerController extends Controller
     {
         $banner = Banner::findOrFail($id);
 
-        if ($banner->gambar && File::exists(public_path('banner/' . $banner->gambar))) {
-            File::delete(public_path('banner/' . $banner->gambar));
+        // Hapus gambar dari Supabase Storage saat data dihapus
+        if ($banner->gambar && Storage::disk('supabase')->exists($banner->gambar)) {
+            Storage::disk('supabase')->delete($banner->gambar);
         }
 
         $banner->delete();

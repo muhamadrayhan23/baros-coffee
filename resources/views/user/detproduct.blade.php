@@ -7,8 +7,19 @@
         <div class="rounded-4xl border border-coffee-bean/10 bg-white p-6 shadow-sm lg:p-10">
             <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
                 <div class="overflow-hidden rounded-3xl border border-coffee-bean/10">
-                    <img src="{{ $product->gambar ? asset('product/' . $product->gambar) : asset('assets/home/home 2.png') }}"
-                        alt="{{ $product->nama_produk }}" class="h-full w-full object-contain">
+                    <div class="overflow-hidden rounded-3xl border border-coffee-bean/10">
+                        @php
+                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                            $imageUrl = $product->gambar
+                                ? (Str::startsWith($product->gambar, ['http://', 'https://'])
+                                    ? $product->gambar
+                                    : $baseUrl . '/' . ltrim($product->gambar, '/'))
+                                : asset('assets/home/home 2.png');
+                        @endphp
+                        <img src="{{ $imageUrl }}" alt="{{ $product->nama_produk }}"
+                            onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
+                            class="h-full w-full object-contain">
+                    </div>
                 </div>
                 <div>
                     <p class="text-sm font-semibold uppercase tracking-[0.3em] text-black-cherry/70">Detail Produk</p>
@@ -67,8 +78,16 @@
                         @foreach ($relatedProducts as $relatedProduct)
                             <a href="{{ route('user.product.detail', $relatedProduct->id) }}"
                                 class="min-w-[240px] max-w-[260px] flex-shrink-0 rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                                <img src="{{ $relatedProduct->gambar ? asset('product/' . $relatedProduct->gambar) : asset('assets/home/home 2.png') }}"
-                                    alt="{{ $relatedProduct->nama_produk }}"
+                                @php
+                                    $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                    $imageUrl = $relatedProduct->gambar
+                                        ? (Str::startsWith($relatedProduct->gambar, ['http://', 'https://'])
+                                            ? $relatedProduct->gambar
+                                            : $baseUrl . '/' . ltrim($relatedProduct->gambar, '/'))
+                                        : asset('assets/home/home 2.png');
+                                @endphp
+                                <img src="{{ $imageUrl }}" alt="{{ $relatedProduct->nama_produk }}"
+                                    onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                     class="h-40 w-full rounded-[1.2rem] object-cover">
                                 <h3 class="mt-4 text-lg font-bold text-coffee-bean">{{ $relatedProduct->nama_produk }}</h3>
                                 <p class="mt-2 text-sm leading-6 text-coffee-bean/70">

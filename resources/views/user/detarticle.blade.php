@@ -7,8 +7,16 @@
         <div class="rounded-4xl border border-coffee-bean/10 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
             <p class="text-sm font-semibold uppercase tracking-[0.3em] text-black-cherry/70">Detail Artikel</p>
             <h1 class="mt-2 text-3xl font-black text-coffee-bean">{{ $article->judul }}</h1>
-            <img src="{{ $article->thumbnail ? (Str::startsWith($article->thumbnail, 'article/') ? asset($article->thumbnail) : asset('article/' . $article->thumbnail)) : asset('assets/home/home 2.png') }}"
-                alt="{{ $article->judul }}"
+            @php
+                $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                $imageUrl = $article->thumbnail
+                    ? (Str::startsWith($article->thumbnail, ['http://', 'https://'])
+                        ? $article->thumbnail
+                        : $baseUrl . '/' . ltrim($article->thumbnail, '/'))
+                    : asset('assets/home/home 2.png');
+            @endphp
+            <img src="{{ $imageUrl }}" alt="{{ $article->judul }}"
+                onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                 class="mt-6 h-72 w-full rounded-[1.5rem] object-cover border border-coffee-bean/10">
             <div class="prose prose-sm mt-6 max-w-none text-sm leading-8 text-coffee-bean/75">
                 {!! $article->isi !!}
@@ -24,8 +32,16 @@
                         @foreach ($relatedArticles as $relatedArticle)
                             <a href="{{ route('user.article.detail', $relatedArticle->id) }}"
                                 class="group overflow-hidden rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4 transition hover:-translate-y-1 hover:shadow-md">
-                                <img src="{{ $relatedArticle->thumbnail ? (Str::startsWith($relatedArticle->thumbnail, 'article/') ? asset($relatedArticle->thumbnail) : asset('article/' . $relatedArticle->thumbnail)) : asset('assets/home/home 2.png') }}"
-                                    alt="{{ $relatedArticle->judul }}"
+                                @php
+                                    $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                    $imageUrl = $relatedArticle->thumbnail
+                                        ? (Str::startsWith($relatedArticle->thumbnail, ['http://', 'https://'])
+                                            ? $relatedArticle->thumbnail
+                                            : $baseUrl . '/' . ltrim($relatedArticle->thumbnail, '/'))
+                                        : asset('assets/home/home 2.png');
+                                @endphp
+                                <img src="{{ $imageUrl }}" alt="{{ $relatedArticle->judul }}"
+                                    onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                     class="h-48 w-full rounded-[1.2rem] object-cover object-center">
                                 <h3 class="mt-4 text-lg font-bold text-coffee-bean">{{ $relatedArticle->judul }}</h3>
                                 <p class="mt-2 text-sm leading-7 text-coffee-bean/70">

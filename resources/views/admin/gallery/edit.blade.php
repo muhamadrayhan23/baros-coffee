@@ -55,7 +55,16 @@
             <div class="rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4">
                 <div class="text-sm font-semibold text-coffee-bean">Preview Foto Saat Ini</div>
                 @if ($gallery->foto)
-                    <img src="{{ asset('gallery/' . $gallery->foto) }}" alt="{{ $gallery->caption }}"
+                    @php
+                        $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                        $imageUrl = $gallery->foto
+                            ? (Str::startsWith($gallery->foto, ['http://', 'https://'])
+                                ? $gallery->foto
+                                : $baseUrl . '/' . ltrim($gallery->foto, '/'))
+                            : asset('assets/home/home 2.png');
+                    @endphp
+                    <img src="{{ $imageUrl }}" alt="{{ $gallery->caption }}"
+                        onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                         class="mt-4 h-56 w-full rounded-3xl object-cover border border-coffee-bean/10">
                 @else
                     <div class="mt-4 h-56 rounded-3xl bg-frosted-blue/20 flex items-center justify-center text-coffee-bean">

@@ -19,12 +19,10 @@
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 mt-6">
-            <label class="relative block w-full sm:w-80">
-                <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
-                <input type="text" data-search-input placeholder="Cari produk..."
-                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
+            <label class="relative block w-full md:max-w-md lg:max-w-lg">
+                <input type="text" data-search-input placeholder="Cari galeri..."
+                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2.5 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
 
-                <!-- Icon Search (Dipindah ke sebelah kanan dengan right-3) -->
                 <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-coffee-bean/50 text-base">
                     <ion-icon name="search-outline"></ion-icon>
@@ -40,7 +38,14 @@
                         class="rounded-2xl border border-coffee-bean/10 bg-cornsilk shadow-sm hover:shadow-md transition group">
                         <div class="relative overflow-hidden rounded-t-2xl">
                             @if ($product->gambar)
-                                <img src="{{ asset('product/' . $product->gambar) }}" alt="{{ $product->nama_produk }}"
+                                @php
+                                    $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                    $imageUrl = Str::startsWith($product->gambar, ['http://', 'https://'])
+                                        ? $product->gambar
+                                        : $baseUrl . '/' . ltrim($product->gambar, '/');
+                                @endphp
+                                <img src="{{ $imageUrl }}" alt="{{ $product->nama_produk }}"
+                                    onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                     class="h-36 w-full object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">
                             @else
                                 <div

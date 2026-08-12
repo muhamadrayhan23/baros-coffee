@@ -17,16 +17,13 @@
                 </a>
             </div>
         </div>
-        @if (session('success'))
-            <div class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded">{{ session('success') }}</div>
-        @endif
 
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
-            <label class="relative block w-full sm:w-80">
-                <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 mt-6">
+            <label class="relative block w-full md:max-w-md lg:max-w-lg">
                 <input type="text" data-search-input placeholder="Cari artikel..."
-                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
-                <!-- Icon Search (Dipindah ke sebelah kanan dengan right-3) -->
+                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2.5 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
+
                 <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-coffee-bean/50 text-base">
                     <ion-icon name="search-outline"></ion-icon>
@@ -60,7 +57,16 @@
                                             data-caption="{{ Str::limit($article->judul, 80) }}"
                                             onclick="openArticleZoomModal(this)" aria-label="Lihat foto thumbnail"
                                             class="group inline-flex h-20 w-24 cursor-pointer overflow-hidden border border-coffee-bean/10 bg-frosted-blue/20 transition hover:border-coffee-bean/40 focus:outline-none focus:ring-2 focus:ring-coffee-bean/40">
-                                            <img src="{{ asset($article->thumbnail) }}" alt="{{ $article->judul }}"
+                                            @php
+                                                $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                                $imageUrl = $article->thumbnail
+                                                    ? (Str::startsWith($article->thumbnail, ['http://', 'https://'])
+                                                        ? $article->thumbnail
+                                                        : $baseUrl . '/' . ltrim($article->thumbnail, '/'))
+                                                    : asset('assets/home/home 2.png');
+                                            @endphp
+                                            <img src="{{ $imageUrl }}" alt="{{ $article->judul }}"
+                                                onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                                 class="h-full w-full object-cover transition duration-150 group-hover:scale-105">
                                         </button>
                                     @else
@@ -71,7 +77,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 font-bold text-coffee-bean">
-                                    {{ $article->judul }}
+                                    {{ Str::limit($article->judul, 50) }}
                                 </td>
                                 <td class="px-6 py-4 font-medium opacity-70">
                                     {{ \Carbon\Carbon::parse($article->created_at)->translatedFormat('d M Y') ?? date('d M Y', strtotime($article->created_at)) }}

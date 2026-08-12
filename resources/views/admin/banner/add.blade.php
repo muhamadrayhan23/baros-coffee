@@ -20,13 +20,14 @@
             <div class="mt-6 p-4 rounded-2xl bg-black-cherry/10 border border-black-cherry/20">
                 <ul class="text-sm text-black-cherry space-y-2">
                     @foreach ($errors->all() as $error)
-                        <li>• {{ $error }}</li>
+                        <li>â€¢ {{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @endif
 
-        <form action="{{ route('admin.banner.store') }}" method="POST" enctype="multipart/form-data" class="max-w-xl space-y-6">
+        <form action="{{ route('admin.banner.store') }}" method="POST" enctype="multipart/form-data"
+            class="max-w-xl space-y-6">
             @csrf
 
             <div>

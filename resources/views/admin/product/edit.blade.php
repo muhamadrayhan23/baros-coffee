@@ -76,7 +76,16 @@
             @if ($product->gambar)
                 <div class="rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4">
                     <div class="text-sm font-semibold text-coffee-bean">Preview Gambar Saat Ini</div>
-                    <img src="{{ asset('product/' . $product->gambar) }}" alt="{{ $product->nama_produk }}"
+                    @php
+                        $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                        $imageUrl = $product->gambar
+                            ? (Str::startsWith($product->gambar, ['http://', 'https://'])
+                                ? $product->gambar
+                                : $baseUrl . '/' . ltrim($product->gambar, '/'))
+                            : asset('assets/home/home 2.png');
+                    @endphp
+                    <img src="{{ $imageUrl }}" alt="{{ $product->nama_produk }}"
+                        onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                         class="mt-4 h-56 w-full rounded-3xl object-cover border border-coffee-bean/10">
                 </div>
             @endif

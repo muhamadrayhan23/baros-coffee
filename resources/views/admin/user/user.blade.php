@@ -18,13 +18,11 @@
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
-            <label class="relative block w-full sm:w-80">
-                <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 mt-6">
+            <label class="relative block w-full md:max-w-md lg:max-w-lg">
                 <input type="text" data-search-input placeholder="Cari pengguna..."
-                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
+                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2.5 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
 
-                <!-- Icon Search (Dipindah ke sebelah kanan dengan right-3) -->
                 <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-coffee-bean/50 text-base">
                     <ion-icon name="search-outline"></ion-icon>

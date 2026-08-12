@@ -17,13 +17,11 @@
                 </a>
             </div>
         </div>
-        <div class ="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6">
-            <label class="relative block w-full sm:w-80">
-                <!-- Input Field (Teks/Placeholder di kiri, padding kanan pr-10 memberi ruang untuk icon) -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 mt-6">
+            <label class="relative block w-full md:max-w-md lg:max-w-lg">
                 <input type="text" data-search-input placeholder="Cari galeri..."
-                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
+                    class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2.5 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
 
-                <!-- Icon Search (Dipindah ke sebelah kanan dengan right-3) -->
                 <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-coffee-bean/50 text-base">
                     <ion-icon name="search-outline"></ion-icon>
@@ -53,12 +51,20 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @if ($gallery->foto)
-                                        <button type="button" data-image="{{ asset('gallery/' . $gallery->foto) }}"
+                                        @php
+                                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                            $imageUrl = Str::startsWith($gallery->foto, ['http://', 'https://'])
+                                                ? $gallery->foto
+                                                : $baseUrl . '/' . ltrim($gallery->foto, '/');
+                                        @endphp
+
+                                        <button type="button" data-image="{{ $imageUrl }}"
                                             data-caption="{{ Str::limit($gallery->caption, 80) }}"
                                             onclick="openGalleryZoomModal(this)" aria-label="Lihat foto galeri"
-                                            class="group inline-flex h-20 w-20 cursor-pointer overflow-hidden  border border-coffee-bean/10 bg-frosted-blue/20 transition hover:border-coffee-bean/40 focus:outline-none focus:ring-2 focus:ring-coffee-bean/40">
-                                            <img src="{{ asset('gallery/' . $gallery->foto) }}"
-                                                alt="{{ $gallery->caption }}"
+                                            class="group inline-flex h-20 w-20 cursor-pointer overflow-hidden border border-coffee-bean/10 bg-frosted-blue/20 transition hover:border-coffee-bean/40 focus:outline-none focus:ring-2 focus:ring-coffee-bean/40">
+
+                                            <img src="{{ $imageUrl }}" alt="{{ $gallery->caption }}"
+                                                onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                                 class="h-full w-full object-cover transition duration-150 group-hover:scale-105">
                                         </button>
                                     @else
@@ -92,13 +98,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr id="gallery-empty-state-row" class="hidden">
-                                <td colspan="5" class="px-6 py-12 text-center text-sm opacity-55">
-                                    <ion-icon name="images-outline"
-                                        class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
-                                    <span>Foto tidak ditemukan.</span>
-                                </td>
-                            </tr>
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-12 text-center text-sm opacity-55">
@@ -119,7 +118,6 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             @if ($galleries->hasPages())
                 <div class="px-6 py-4 border-t border-coffee-bean/10">
                     {{ $galleries->links() }}
@@ -128,6 +126,7 @@
         </div>
     </div>
 
+    <!-- ... Sisa Modal Hapus & Modal Zoom beserta Javascript tetap sama persis seperti sebelumnya ... -->
     <div id="delete-gallery-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-coffee-bean/70 backdrop-blur-sm"></div>
         <div class="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
@@ -150,26 +149,18 @@
 
     <div id="gallery-zoom-modal"
         class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-coffee-bean/60 backdrop-blur-md transition-all">
-        <!-- Overlay Transparan untuk Klik-Tutup -->
         <div class="fixed inset-0" onclick="closeGalleryZoomModal()"></div>
-
-        <!-- Container Card (Ukuran Lebih Besar & Transparan) -->
         <div class="relative z-10 w-full max-w-sm sm:max-w-md">
-
-            <!-- Tombol Close (Di Luar Foto / Pojok Kanan Atas Tanpa Menyentuh Foto) -->
             <button type="button" onclick="closeGalleryZoomModal()"
                 class="absolute -top-12 right-0 z-20 flex h-10 w-10 items-center justify-center rounded-full text-white shadow-lg hover:bg-black transition"
                 aria-label="Tutup">
                 <ion-icon name="close-outline" class="text-2xl"></ion-icon>
             </button>
-
-            <!-- Bingkai Foto Ukuran Besar (320px - 384px) & Object-Cover -->
             <div class="h-80 sm:h-96 w-full overflow-hidden rounded-3xl bg-gray-900/10 shadow-2xl ring-1 ring-white/20">
                 <img id="gallery-zoom-image" src="" alt=""
                     class="h-full w-full object-cover object-center transition-transform duration-150"
                     style="transform: scale(1);" />
             </div>
-
         </div>
     </div>
 
@@ -214,6 +205,7 @@
             image.src = '';
         }
 
+        // Sisa script Event Listener dibiarkan persis sama
         document.addEventListener('DOMContentLoaded', function() {
             const deleteModal = document.getElementById('delete-gallery-modal');
             const zoomModal = document.getElementById('gallery-zoom-modal');
@@ -259,13 +251,7 @@
             const rows = Array.from(document.querySelectorAll('[data-search-item]'));
             const emptyStateRow = document.getElementById('gallery-empty-state-row');
 
-            if (!searchInput || !emptyStateRow) {
-                return;
-            }
-
-            if (!rows.length) {
-                return;
-            }
+            if (!searchInput || !emptyStateRow || !rows.length) return;
 
             const normalize = (value) => (value || '').toLowerCase().trim();
 
@@ -276,9 +262,7 @@
                 rows.forEach(function(row) {
                     const matches = normalize(row.getAttribute('data-search')).includes(term);
                     row.style.display = matches ? '' : 'none';
-                    if (matches) {
-                        visibleCount++;
-                    }
+                    if (matches) visibleCount++;
                 });
 
                 emptyStateRow.classList.toggle('hidden', visibleCount > 0);

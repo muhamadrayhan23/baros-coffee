@@ -15,8 +15,17 @@
             <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse($galleries as $gallery)
                     <div class="overflow-hidden rounded-3xl border border-coffee-bean/10 bg-cornsilk">
-                        <img src="{{ $gallery->foto ? asset('gallery/' . $gallery->foto) : asset('assets/home/home 2.png') }}"
-                            alt="{{ $gallery->caption ?? 'Galeri Baros Coffee' }}" class="h-60 w-full object-cover">
+                        @php
+                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                            $imageUrl = $gallery->foto
+                                ? (Str::startsWith($gallery->foto, ['http://', 'https://'])
+                                    ? $gallery->foto
+                                    : $baseUrl . '/' . ltrim($gallery->foto, '/'))
+                                : asset('assets/home/home 2.png');
+                        @endphp
+                        <img src="{{ $imageUrl }}" alt="{{ $gallery->caption ?? 'Galeri Baros Coffee' }}"
+                            onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
+                            class="h-60 w-full object-cover">
                     </div>
                 @empty
                     <p class="text-sm text-coffee-bean/60">Belum ada galeri.</p>

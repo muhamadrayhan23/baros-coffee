@@ -24,6 +24,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'supabase' => [
+        'storage_url' => env('SUPABASE_STORAGE_URL'),
+    ],
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -40,32 +40,29 @@ class ProductController extends Controller
             'published'   => 'nullable|boolean',
         ], [
             'nama_produk.required' => 'Nama produk wajib diisi.',
-            'harga.required' => 'Harga produk wajib diisi.',
-            'harga.numeric' => 'Harga produk harus berupa angka.',
-            'berat.required' => 'Berat produk wajib diisi.',
-            'berat.numeric' => 'Berat produk harus berupa angka.',
-            'gambar.required' => 'Gambar produk wajib diunggah.',
-            'gambar.image' => 'Gambar produk harus berupa file gambar.',
-            'gambar.mimes' => 'Gambar produk harus berformat jpeg, png, jpg, atau webp.',
-            'gambar.max' => 'Ukuran gambar produk maksimal 2MB.',
-            'deskripsi.required' => 'Deskripsi produk wajib diisi.',
+            'harga.required'       => 'Harga produk wajib diisi.',
+            'harga.numeric'        => 'Harga produk harus berupa angka.',
+            'berat.required'       => 'Berat produk wajib diisi.',
+            'berat.numeric'        => 'Berat produk harus berupa angka.',
+            'gambar.required'      => 'Gambar produk wajib diunggah.',
+            'gambar.image'         => 'Gambar produk harus berupa file gambar.',
+            'gambar.mimes'         => 'Gambar produk harus berformat jpeg, png, jpg, atau webp.',
+            'gambar.max'           => 'Ukuran gambar produk maksimal 2MB.',
+            'deskripsi.required'   => 'Deskripsi produk wajib diisi.',
         ]);
 
-        $imageName = null;
+        $imagePath = null;
         if ($request->hasFile('gambar')) {
-            File::ensureDirectoryExists(public_path('product'));
-            $image = $request->file('gambar');
-            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('product'), $imageName);
+            // Upload gambar langsung ke folder 'products' di Supabase Storage
+            $imagePath = $request->file('gambar')->store('products', 'supabase');
         }
 
         Product::create([
             'nama_produk' => $request->nama_produk,
             'harga'       => $request->harga,
             'berat'       => $request->berat,
-            'gambar'      => $imageName,
+            'gambar'      => $imagePath,
             'deskripsi'   => $request->deskripsi,
-            // Jika checkbox di-centang bernilai true, jika tidak di-centang bernilai false
             'published'   => $request->has('published') ? true : false,
         ]);
 
@@ -78,6 +75,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::findOrFail($id);
+
         return view('admin.product.edit', compact('product'));
     }
 
@@ -97,33 +95,32 @@ class ProductController extends Controller
             'published'   => 'nullable|boolean',
         ], [
             'nama_produk.required' => 'Nama produk wajib diisi.',
-            'harga.required' => 'Harga produk wajib diisi.',
-            'harga.numeric' => 'Harga produk harus berupa angka.',
-            'berat.required' => 'Berat produk wajib diisi.',
-            'berat.numeric' => 'Berat produk harus berupa angka.',
-            'gambar.image' => 'Gambar produk harus berupa file gambar.',
-            'gambar.mimes' => 'Gambar produk harus berformat jpeg, png, jpg, atau webp.',
-            'gambar.max' => 'Ukuran gambar produk maksimal 2MB.',
+            'harga.required'       => 'Harga produk wajib diisi.',
+            'harga.numeric'        => 'Harga produk harus berupa angka.',
+            'berat.required'       => 'Berat produk wajib diisi.',
+            'berat.numeric'        => 'Berat produk harus berupa angka.',
+            'gambar.image'         => 'Gambar produk harus berupa file gambar.',
+            'gambar.mimes'         => 'Gambar produk harus berformat jpeg, png, jpg, atau webp.',
+            'gambar.max'           => 'Ukuran gambar produk maksimal 2MB.',
         ]);
 
-        $imageName = $product->gambar;
+        $imagePath = $product->gambar;
 
         if ($request->hasFile('gambar')) {
-            if ($product->gambar && File::exists(public_path('product/' . $product->gambar))) {
-                File::delete(public_path('product/' . $product->gambar));
+            // Hapus gambar lama dari Supabase jika ada
+            if ($product->gambar && Storage::disk('supabase')->exists($product->gambar)) {
+                Storage::disk('supabase')->delete($product->gambar);
             }
 
-            File::ensureDirectoryExists(public_path('product'));
-            $image = $request->file('gambar');
-            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('product'), $imageName);
+            // Upload gambar baru ke Supabase Storage
+            $imagePath = $request->file('gambar')->store('products', 'supabase');
         }
 
         $product->update([
             'nama_produk' => $request->nama_produk,
             'harga'       => $request->harga,
             'berat'       => $request->berat,
-            'gambar'      => $imageName,
+            'gambar'      => $imagePath,
             'deskripsi'   => $request->deskripsi,
             'published'   => $request->has('published') ? true : false,
         ]);
@@ -138,8 +135,9 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if ($product->gambar && File::exists(public_path('product/' . $product->gambar))) {
-            File::delete(public_path('product/' . $product->gambar));
+        // Hapus gambar dari Supabase Storage saat data dihapus
+        if ($product->gambar && Storage::disk('supabase')->exists($product->gambar)) {
+            Storage::disk('supabase')->delete($product->gambar);
         }
 
         $product->delete();
@@ -153,7 +151,7 @@ class ProductController extends Controller
     public function togglePublished($id)
     {
         $product = Product::findOrFail($id);
-        $product->published = !$product->published;
+        $product->published = ! $product->published;
         $product->save();
 
         return redirect()->route('admin.product.index')->with('success', 'Status publikasi produk berhasil diubah!');

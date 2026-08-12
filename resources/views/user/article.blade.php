@@ -15,8 +15,17 @@
             <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 @forelse($articles as $article)
                     <div class="rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4">
-                        <img src="{{ $article->thumbnail ? (Str::startsWith($article->thumbnail, 'article/') ? asset($article->thumbnail) : asset('article/' . $article->thumbnail)) : asset('assets/home/home 2.png') }}"
-                            alt="{{ $article->judul }}" class="h-48 w-full rounded-[1.2rem] object-cover">
+                        @php
+                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                            $imageUrl = $article->thumbnail
+                                ? (Str::startsWith($article->thumbnail, ['http://', 'https://'])
+                                    ? $article->thumbnail
+                                    : $baseUrl . '/' . ltrim($article->thumbnail, '/'))
+                                : asset('assets/home/home 2.png');
+                        @endphp
+                        <img src="{{ $imageUrl }}" alt="{{ $article->judul }}"
+                            onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
+                            class="h-48 w-full rounded-[1.2rem] object-cover">
                         <h2 class="mt-4 text-xl font-bold text-coffee-bean">{{ $article->judul }}</h2>
                         <p class="mt-2 text-sm leading-7 text-coffee-bean/70">
                             {{ Str::limit(strip_tags($article->isi), 120) }}</p>

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Article;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
     public function index()
     {
         $articles = Article::latest()->paginate(5);
+
         return view('admin.article.article', compact('articles'));
     }
 
@@ -23,6 +23,7 @@ class ArticleController extends Controller
     public function edit($id)
     {
         $article = Article::findOrFail($id);
+
         return view('admin.article.edit', compact('article'));
     }
 
@@ -41,14 +42,8 @@ class ArticleController extends Controller
         ]);
 
         if ($request->hasFile('thumbnail')) {
-            $file = $request->file('thumbnail');
-            $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('article');
-            if (!File::exists($dest)) {
-                File::makeDirectory($dest, 0755, true);
-            }
-            $file->move($dest, $name);
-            $data['thumbnail'] = 'article/' . $name; // public/article/filename
+            // Upload thumbnail langsung ke folder 'articles' di Supabase Storage
+            $data['thumbnail'] = $request->file('thumbnail')->store('articles', 'supabase');
         }
 
         Article::create($data);
@@ -72,19 +67,13 @@ class ArticleController extends Controller
         ]);
 
         if ($request->hasFile('thumbnail')) {
-            // remove old file from public folder
-            if ($article->thumbnail && File::exists(public_path($article->thumbnail))) {
-                File::delete(public_path($article->thumbnail));
+            // Hapus thumbnail lama dari Supabase Storage jika ada
+            if ($article->thumbnail && Storage::disk('supabase')->exists($article->thumbnail)) {
+                Storage::disk('supabase')->delete($article->thumbnail);
             }
 
-            $file = $request->file('thumbnail');
-            $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('article');
-            if (!File::exists($dest)) {
-                File::makeDirectory($dest, 0755, true);
-            }
-            $file->move($dest, $name);
-            $data['thumbnail'] = 'article/' . $name;
+            // Upload thumbnail baru ke Supabase Storage
+            $data['thumbnail'] = $request->file('thumbnail')->store('articles', 'supabase');
         }
 
         $article->update($data);
@@ -95,10 +84,14 @@ class ArticleController extends Controller
     public function destroy($id)
     {
         $article = Article::findOrFail($id);
-        if ($article->thumbnail && File::exists(public_path($article->thumbnail))) {
-            File::delete(public_path($article->thumbnail));
+
+        // Hapus thumbnail dari Supabase Storage saat artikel dihapus
+        if ($article->thumbnail && Storage::disk('supabase')->exists($article->thumbnail)) {
+            Storage::disk('supabase')->delete($article->thumbnail);
         }
+
         $article->delete();
+
         return redirect()->route('admin.article.index')->with('success', 'Artikel berhasil dihapus.');
     }
 }

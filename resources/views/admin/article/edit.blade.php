@@ -65,8 +65,16 @@
             @if ($article->thumbnail)
                 <div class="rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4">
                     <div class="text-sm font-semibold text-coffee-bean">Preview Thumbnail Saat Ini</div>
-                    <img src="{{ $article->thumbnail ? (Str::startsWith($article->thumbnail, 'article/') ? asset($article->thumbnail) : asset('article/' . $article->thumbnail)) : asset('assets/home/home 2.png') }}"
-                        alt="{{ $article->judul }}"
+                    @php
+                        $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                        $imageUrl = $article->thumbnail
+                            ? (Str::startsWith($article->thumbnail, ['http://', 'https://'])
+                                ? $article->thumbnail
+                                : $baseUrl . '/' . ltrim($article->thumbnail, '/'))
+                            : asset('assets/home/home 2.png');
+                    @endphp
+                    <img src="{{ $imageUrl }}" alt="{{ $article->judul }}"
+                        onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                         class="mt-4 h-56 w-full rounded-3xl object-cover border border-coffee-bean/10">
                 </div>
             @endif

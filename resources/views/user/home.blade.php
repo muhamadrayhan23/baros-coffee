@@ -10,7 +10,16 @@
             @foreach ($banners as $index => $banner)
                 <div class="banner-slide absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
                     data-index="{{ $index }}">
-                    <img src="{{ asset('banner/' . $banner->gambar) }}" alt="{{ $banner->nama_banner }}"
+                    @php
+                        $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                        $imageUrl = $banner->gambar
+                            ? (Str::startsWith($banner->gambar, ['http://', 'https://'])
+                                ? $banner->gambar
+                                : $baseUrl . '/' . ltrim($banner->gambar, '/'))
+                            : asset('assets/home/home 2.png');
+                    @endphp
+                    <img src="{{ $imageUrl }}" alt="{{ $banner->nama_banner }}"
+                        onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                         class="w-full h-full object-cover">
                     {{-- Overlay gradient for readability --}}
                     <div class="absolute inset-0 bg-gradient-to-t from-coffee-bean/70 via-coffee-bean/10 to-transparent">
@@ -200,8 +209,16 @@
                                 <article data-slide
                                     class="w-full flex-shrink-0 h-full flex flex-col justify-between rounded-4xl border border-coffee-bean/10 bg-cornsilk p-4">
                                     <div>
-                                        <img src="{{ $product->gambar ? asset('product/' . $product->gambar) : asset('assets/home/home 2.png') }}"
-                                            alt="{{ $product->nama_produk }}"
+                                        @php
+                                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                            $imageUrl = $product->gambar
+                                                ? (Str::startsWith($product->gambar, ['http://', 'https://'])
+                                                    ? $product->gambar
+                                                    : $baseUrl . '/' . ltrim($product->gambar, '/'))
+                                                : asset('assets/home/home 2.png');
+                                        @endphp
+                                        <img src="{{ $imageUrl }}" alt="{{ $product->nama_produk }}"
+                                            onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                                             class="h-48 w-full rounded-[1.2rem] object-cover">
                                         <h2 class="mt-4 text-xl font-bold text-coffee-bean">{{ $product->nama_produk }}
                                         </h2>
@@ -292,8 +309,17 @@
                 <div class="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                     @forelse($articles as $article)
                         <div class="rounded-2xl border border-coffee-bean/10 bg-cornsilk p-4">
-                            <img src="{{ $article->thumbnail ? (Str::startsWith($article->thumbnail, 'article/') ? asset($article->thumbnail) : asset('article/' . $article->thumbnail)) : asset('assets/home/home 2.png') }}"
-                                alt="{{ $article->judul }}" class="h-36 w-full rounded-xl object-cover">
+                            @php
+                                $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                                $imageUrl = $article->thumbnail
+                                    ? (Str::startsWith($article->thumbnail, ['http://', 'https://'])
+                                        ? $article->thumbnail
+                                        : $baseUrl . '/' . ltrim($article->thumbnail, '/'))
+                                    : asset('assets/home/home 2.png');
+                            @endphp
+                            <img src="{{ $imageUrl }}" alt="{{ $article->judul }}"
+                                onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
+                                class="h-36 w-full rounded-xl object-cover">
                             <h3 class="mt-4 text-lg font-bold text-coffee-bean">
                                 {{ Str::limit($article->judul, 50, '...') }}
                             </h3>
@@ -318,8 +344,16 @@
 
                 <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @forelse($galleries as $gallery)
-                        <img src="{{ $gallery->foto ? asset('gallery/' . $gallery->foto) : asset('assets/home/home 2.png') }}"
-                            alt="{{ $gallery->caption ?? 'Galeri Baros Coffee' }}"
+                        @php
+                            $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
+                            $imageUrl = $gallery->foto
+                                ? (Str::startsWith($gallery->foto, ['http://', 'https://'])
+                                    ? $gallery->foto
+                                    : $baseUrl . '/' . ltrim($gallery->foto, '/'))
+                                : asset('assets/home/home 2.png');
+                        @endphp
+                        <img src="{{ $imageUrl }}" alt="{{ $gallery->caption ?? 'Galeri Baros Coffee' }}"
+                            onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                             class="h-48 w-full rounded-2xl object-cover border border-coffee-bean/10">
                     @empty
                         <p class="text-sm text-coffee-bean/60">Belum ada galeri.</p>
