@@ -20,7 +20,7 @@
 
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 mt-6">
-            <label class="relative block w-full md:max-w-md lg:max-w-lg">
+            <label class="relative block w-full max-w-none">
                 <input type="text" data-search-input placeholder="Cari artikel..."
                     class="w-full rounded-xl border border-coffee-bean/10 bg-cornsilk pl-4 pr-10 py-2.5 text-sm text-coffee-bean outline-none transition focus:border-coffee-bean/40 placeholder:text-coffee-bean/50" />
 
