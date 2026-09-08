@@ -223,7 +223,7 @@
                                         <h2 class="mt-4 text-xl font-bold text-coffee-bean">{{ $product->nama_produk }}
                                         </h2>
                                         <p class="mt-2 text-sm leading-7 text-coffee-bean/70">
-                                            {{ Str::limit($product->deskripsi, 120) }}</p>
+                                            {{ Str::limit(strip_tags($product->deskripsi), 120) }}</p>
                                     </div>
                                     <div class="mt-6">
                                         <a href="{{ route('user.product.detail', $product->id) }}"

@@ -52,7 +52,9 @@
                     </div>
                     <p class="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-black-cherry/70">Deskripsi Produk
                     </p>
-                    <p class="mt-2 text-sm leading-8 text-coffee-bean/75">{{ $product->deskripsi }}</p>
+                    <div class="product-description mt-2 text-sm leading-8 text-coffee-bean/75">
+                        {!! $product->deskripsi !!}
+                    </div>
                     <div class="mt-6 rounded-3xl  ">
                         <a href="https://wa.me/6283861969316?text=Halo%20Admin%20Baros%20Coffee!%20%F0%9F%91%8B%0A%0AMau%20tanya%2C%20untuk%20kopi%20varian%20*Full%20Wash%20%2F%20Honey%20%2F%20Natural%20%2F%20Wine%20%2F%20Robusta*%20apakah%20masih%20ready%3F%0A%0ASaya%20bermaksud%20mau%20order.%20Mohon%20info%20ketersediaan%20stok%20dan%20total%20harganya%20ya%20Kak.%20Terima%20kasih!"
                             target="_blank" rel="noopener noreferrer"
@@ -91,7 +93,7 @@
                                     class="h-40 w-full rounded-[1.2rem] object-cover">
                                 <h3 class="mt-4 text-lg font-bold text-coffee-bean">{{ $relatedProduct->nama_produk }}</h3>
                                 <p class="mt-2 text-sm leading-6 text-coffee-bean/70">
-                                    {{ Str::limit($relatedProduct->deskripsi, 90) }}</p>
+                                    {{ Str::limit(strip_tags($relatedProduct->deskripsi), 90) }}</p>
                                 <p class="mt-3 text-sm font-semibold text-black-cherry">Rp
                                     {{ number_format($relatedProduct->harga, 0, ',', '.') }}</p>
                             </a>
@@ -103,4 +105,54 @@
             </div>
         </div>
     </section>
+
+    <style>
+        .product-description p {
+            margin: 0 0 0.75rem;
+        }
+
+        .product-description p:last-child {
+            margin-bottom: 0;
+        }
+
+        .product-description h1,
+        .product-description h2,
+        .product-description h3 {
+            margin: 1rem 0 0.5rem;
+            font-weight: 800;
+            line-height: 1.3;
+            color: #220F07;
+        }
+
+        .product-description h1 {
+            font-size: 1.5rem;
+        }
+
+        .product-description h2 {
+            font-size: 1.25rem;
+        }
+
+        .product-description h3 {
+            font-size: 1.125rem;
+        }
+
+        .product-description ul,
+        .product-description ol {
+            margin: 0.5rem 0 0.75rem;
+            padding-left: 1.5rem;
+        }
+
+        .product-description ul {
+            list-style-type: disc;
+        }
+
+        .product-description ol {
+            list-style-type: decimal;
+        }
+
+        .product-description a {
+            color: #540B0E;
+            text-decoration: underline;
+        }
+    </style>
 @endsection

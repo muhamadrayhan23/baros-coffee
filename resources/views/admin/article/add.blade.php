@@ -42,13 +42,78 @@
 
             <div>
                 <label for="isi" class="block text-sm font-semibold mb-2 text-coffee-bean">Isi Artikel</label>
-                <textarea id="isi" name="isi" rows="8" required
-                    class="w-full px-4 py-3 bg-frosted-blue/20 border border-coffee-bean/10 rounded-xl focus:border-coffee-bean/40 focus:ring-1 focus:ring-coffee-bean/40 outline-none transition text-sm text-coffee-bean placeholder-coffee-bean/40"
-                    placeholder="Tulis isi artikel di sini...">{{ old('isi') }}</textarea>
+                <!-- Quill Editor Container -->
+                <div id="editor-isi" class="bg-frosted-blue/20 border border-coffee-bean/10 rounded-xl overflow-hidden text-sm text-coffee-bean placeholder-coffee-bean/40">
+                    {!! old('isi') !!}
+                </div>
+                <textarea id="isi" name="isi" class="hidden">{{ old('isi') }}</textarea>
                 @error('isi')
                     <p class="mt-2 text-xs text-black-cherry font-medium">{{ $message }}</p>
                 @enderror
             </div>
+
+            <style>
+                /* Custom style for Quill to match the design */
+                .ql-toolbar.ql-snow {
+                    border-top-left-radius: 0.75rem;
+                    border-top-right-radius: 0.75rem;
+                    border-color: rgba(34, 15, 7, 0.1) !important;
+                    background-color: rgba(173, 232, 244, 0.2);
+                }
+                .ql-container.ql-snow {
+                    border-bottom-left-radius: 0.75rem;
+                    border-bottom-right-radius: 0.75rem;
+                    border-color: rgba(34, 15, 7, 0.1) !important;
+                    background-color: rgba(173, 232, 244, 0.2);
+                    font-family: 'Inconsolata', ui-sans-serif, system-ui, sans-serif !important;
+                    font-size: 0.875rem !important;
+                    color: #220F07 !important;
+                }
+                .ql-editor {
+                    min-height: 200px;
+                }
+                .ql-editor.ql-blank::before {
+                    color: rgba(34, 15, 7, 0.4) !important;
+                    font-style: normal !important;
+                    content: "Tulis isi artikel di sini..." !important;
+                }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const editorEl = document.querySelector('#editor-isi');
+                    const textareaEl = document.querySelector('#isi');
+                    if (editorEl && textareaEl && window.Quill) {
+                        const quill = new window.Quill('#editor-isi', {
+                            theme: 'snow',
+                            modules: {
+                                toolbar: [
+                                    [{ 'header': [1, 2, 3, false] }],
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                    ['link', 'clean']
+                                ]
+                            }
+                        });
+
+                        // Synchronize Quill editor content with hidden textarea
+                        quill.on('text-change', function() {
+                            let html = quill.root.innerHTML;
+                            if (html === '<p><br></p>') {
+                                html = '';
+                            }
+                            textareaEl.value = html;
+                        });
+                        
+                        // Initial sync
+                        let html = quill.root.innerHTML;
+                        if (html === '<p><br></p>') {
+                            html = '';
+                        }
+                        textareaEl.value = html;
+                    }
+                });
+            </script>
 
             <div>
                 <label for="thumbnail" class="block text-sm font-semibold mb-2 text-coffee-bean">Thumbnail Artikel</label>

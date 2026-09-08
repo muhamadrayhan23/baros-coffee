@@ -74,13 +74,78 @@
 
             <div>
                 <label for="deskripsi" class="block text-sm font-semibold mb-2 text-coffee-bean">Deskripsi</label>
-                <textarea id="deskripsi" name="deskripsi" rows="4"
-                    class="w-full px-4 py-3 bg-frosted-blue/20 border border-coffee-bean/10 rounded-xl focus:border-coffee-bean/40 focus:ring-1 focus:ring-coffee-bean/40 outline-none transition text-sm text-coffee-bean placeholder-coffee-bean/40"
-                    placeholder="Jelaskan keunggulan produk ini">{{ old('deskripsi') }}</textarea>
+                <!-- Quill Editor Container -->
+                <div id="editor-deskripsi" class="bg-frosted-blue/20 border border-coffee-bean/10 rounded-xl overflow-hidden text-sm text-coffee-bean">
+                    {!! old('deskripsi') !!}
+                </div>
+                <textarea id="deskripsi" name="deskripsi" class="hidden">{{ old('deskripsi') }}</textarea>
                 @error('deskripsi')
                     <p class="mt-2 text-xs text-black-cherry font-medium">{{ $message }}</p>
                 @enderror
             </div>
+
+            <style>
+                /* Custom style for Quill to match the design */
+                .ql-toolbar.ql-snow {
+                    border-top-left-radius: 0.75rem;
+                    border-top-right-radius: 0.75rem;
+                    border-color: rgba(34, 15, 7, 0.1) !important;
+                    background-color: rgba(173, 232, 244, 0.2);
+                }
+                .ql-container.ql-snow {
+                    border-bottom-left-radius: 0.75rem;
+                    border-bottom-right-radius: 0.75rem;
+                    border-color: rgba(34, 15, 7, 0.1) !important;
+                    background-color: rgba(173, 232, 244, 0.2);
+                    font-family: 'Inconsolata', ui-sans-serif, system-ui, sans-serif !important;
+                    font-size: 0.875rem !important;
+                    color: #220F07 !important;
+                }
+                .ql-editor {
+                    min-height: 150px;
+                }
+                .ql-editor.ql-blank::before {
+                    color: rgba(34, 15, 7, 0.4) !important;
+                    font-style: normal !important;
+                }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const editorEl = document.querySelector('#editor-deskripsi');
+                    const textareaEl = document.querySelector('#deskripsi');
+                    if (editorEl && textareaEl && window.Quill) {
+                        const quill = new window.Quill('#editor-deskripsi', {
+                            theme: 'snow',
+                            placeholder: 'Jelaskan keunggulan produk ini...',
+                            modules: {
+                                toolbar: [
+                                    [{ 'header': [1, 2, 3, false] }],
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                    ['link', 'clean']
+                                ]
+                            }
+                        });
+
+                        // Synchronize Quill editor content with hidden textarea
+                        quill.on('text-change', function() {
+                            let html = quill.root.innerHTML;
+                            if (html === '<p><br></p>') {
+                                html = '';
+                            }
+                            textareaEl.value = html;
+                        });
+                        
+                        // Initial sync
+                        let html = quill.root.innerHTML;
+                        if (html === '<p><br></p>') {
+                            html = '';
+                        }
+                        textareaEl.value = html;
+                    }
+                });
+            </script>
 
             <div class="flex items-center gap-3">
                 <input id="published" type="checkbox" name="published" value="1"

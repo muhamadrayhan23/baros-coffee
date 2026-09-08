@@ -27,9 +27,17 @@
 
             <div id="product-list" class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 @forelse($products as $product)
+                    @php
+                        $description = trim(
+                            preg_replace(
+                                '/\s+/',
+                                ' ',
+                                strip_tags(html_entity_decode($product->deskripsi ?? '', ENT_QUOTES, 'UTF-8')),
+                            ),
+                        );
+                    @endphp
                     <div class="product-card rounded-3xl border border-coffee-bean/10 bg-cornsilk p-4"
-                        data-name="{{ strtolower($product->nama_produk) }}"
-                        data-deskripsi="{{ strtolower($product->deskripsi) }}">
+                        data-name="{{ strtolower($product->nama_produk) }}" data-deskripsi="{{ strtolower($description) }}">
                         @php
                             $baseUrl = rtrim(config('filesystems.disks.supabase.url'), '/');
                             $imageUrl = $product->gambar
@@ -42,7 +50,8 @@
                             onerror="this.onerror=null; this.src='{{ asset('assets/home/home 2.png') }}';"
                             class="mt-4 h-56 w-full rounded-3xl object-cover border border-coffee-bean/10">
                         <h2 class="mt-4 text-xl font-bold text-coffee-bean">{{ $product->nama_produk }}</h2>
-                        <p class="mt-2 text-sm leading-7 text-coffee-bean/70">{{ Str::limit($product->deskripsi, 120) }}</p>
+                        <p class="mt-2 text-sm leading-7 text-coffee-bean/70">
+                            {{ Str::limit($description, 120) }}</p>
                         <a href="{{ route('user.product.detail', $product->id) }}"
                             class="mt-4 inline-flex text-sm font-semibold text-black-cherry">Lihat Detail</a>
                     </div>

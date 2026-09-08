@@ -33,8 +33,17 @@
         @if ($products->count())
             <div id="product-list" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach ($products as $product)
+                    @php
+                        $description = trim(
+                            preg_replace(
+                                '/\s+/',
+                                ' ',
+                                strip_tags(html_entity_decode($product->deskripsi ?? '', ENT_QUOTES, 'UTF-8')),
+                            ),
+                        );
+                    @endphp
                     <div data-search-item
-                        data-search="{{ strtolower($product->nama_produk) }} {{ strtolower($product->deskripsi) }} {{ number_format($product->harga, 0, ',', '.') }}"
+                        data-search="{{ strtolower($product->nama_produk) }} {{ strtolower($description) }} {{ number_format($product->harga, 0, ',', '.') }}"
                         class="rounded-2xl border border-coffee-bean/10 bg-cornsilk shadow-sm hover:shadow-md transition group">
                         <div class="relative overflow-hidden rounded-t-2xl">
                             @if ($product->gambar)
@@ -54,7 +63,7 @@
                                 </div>
                             @endif
                             <span
-                                class="absolute top-3 right-3 z-10 inline-flex items-center rounded-full border bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide shadow-lg backdrop-blur-sm {{ $product->published ? 'text-green-600' : 'text-amber-600' }}">
+                                class="absolute top-3 right-3 z-10 inline-flex items-center rounded-full border bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide shadow-lg backdrop-blur-sm {{ $product->published ? 'text-green-600' : 'text-red-600' }}">
                                 {{ $product->published ? 'Published' : 'Unpublished' }}
                             </span>
                         </div>
@@ -64,7 +73,7 @@
                                     <h3 class="text-sm font-bold text-coffee-bean truncate">{{ $product->nama_produk }}
                                     </h3>
                                     <p class="text-[11px] text-coffee-bean/60 mt-1.5">
-                                        {{ Str::limit($product->deskripsi, 70) }}</p>
+                                        {{ Str::limit($description, 70) }}</p>
                                 </div>
                                 <div class="relative">
                                     <button type="button" onclick="toggleProductMenu('product-menu-{{ $product->id }}')"
