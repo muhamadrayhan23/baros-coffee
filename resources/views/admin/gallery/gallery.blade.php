@@ -101,17 +101,13 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-12 text-center text-sm opacity-55">
-                                    <ion-icon name="images-outline"
-                                        class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
                                     <span>Belum ada foto galeri. Silakan tambahkan foto baru untuk ditampilkan.</span>
                                 </td>
                             </tr>
                         @endforelse
                         <tr id="gallery-empty-state-row" class="hidden">
                             <td colspan="5" class="px-6 py-12 text-center text-sm opacity-55">
-                                <ion-icon name="images-outline"
-                                    class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
-                                <span>Tidak ada galeri yang sesuai dengan pencarian.</span>
+                                <span>Foto galeri tidak ditemukan.</span>
                             </td>
                         </tr>
                     </tbody>

@@ -86,17 +86,13 @@
                             </tr>
                             <tr id="user-empty-state-row" class="hidden">
                                 <td colspan="5" class="px-6 py-12 text-center text-sm opacity-55">
-                                    <ion-icon name="people-outline"
-                                        class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
-                                    <span>Tidak ada pengguna yang sesuai dengan pencarian.</span>
+                                    <span>Pengguna tidak ditemukan.</span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="px-6 py-12 text-center text-sm opacity-55">
-                                    <ion-icon name="people-outline"
-                                        class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
-                                    <span>Tidak ada data pengguna yang ditemukan.</span>
+                                    <span>Pengguna tidak tersedia. Silakan tambah pengguna baru untuk ditampilkan</span>
                                 </td>
                             </tr>
                         @endforelse

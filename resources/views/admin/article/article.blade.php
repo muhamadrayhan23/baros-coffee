@@ -103,16 +103,12 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-16 text-center text-sm opacity-55">
-                                    <ion-icon name="document-text-outline"
-                                        class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
                                     <span>Belum ada artikel. Silakan tambahkan artikel baru untuk ditampilkan.</span>
                                 </td>
                             </tr>
                         @endforelse
                         <tr id="article-empty-state-row" class="hidden">
                             <td colspan="5" class="px-6 py-12 text-center text-sm opacity-55">
-                                <ion-icon name="document-text-outline"
-                                    class="text-4xl mb-2 block mx-auto text-coffee-bean/50"></ion-icon>
                                 <span>Artikel tidak ditemukan.</span>
                             </td>
                         </tr>

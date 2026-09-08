@@ -119,7 +119,7 @@
             </div>
 
             <div id="product-empty-state" class="hidden rounded-3xl border border-coffee-bean/10 p-10 text-center mt-6">
-                <p class="text-sm font-semibold text-coffee-bean">Produk tidak ditemukan.</p>
+                <p class="text-sm opacity-55 font-semibold text-coffee-bean">Produk tidak ditemukan.</p>
             </div>
 
             @if ($products->hasPages())
@@ -131,7 +131,9 @@
             @endif
         @else
             <div class="rounded-3xl border border-coffee-bean/10 p-10 text-center">
-                <p class="text-sm font-semibold text-coffee-bean">Belum ada produk. Silakan tambahkan produk baru untuk
+                <p class="text-sm opacity-55 font-semibold text-coffee-bean">Produk tidak tersedia. Silakan tambahkan produk
+                    baru
+                    untuk
                     ditampilkan.</p>
             </div>
         @endif
