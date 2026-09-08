@@ -48,7 +48,6 @@
                         <p><span class="font-semibold text-coffee-bean">Harga:</span> Rp
                             {{ number_format($product->harga, 0, ',', '.') }}</p>
                         <p><span class="font-semibold text-coffee-bean">Berat:</span> {{ $product->berat }} gram</p>
-                        <p><span class="font-semibold text-coffee-bean">Stok:</span> {{ $product->stok }}</p>
                     </div>
                     <p class="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-black-cherry/70">Deskripsi Produk
                     </p>
